@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Steam Inventory Scanner</title>
+  <style>
+    body {
+      width: 420px;
+      max-width: 420px;
+      min-width: 420px;
+      height: 900px;
+      padding: 16px 16px 16px 16px;
+      font-family: Tahoma, Geneva, Verdana, sans-serif !important;
+      background: #3c4a36 !important;
+      color: #d2e0c2 !important;
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+      font-size: 13px;
+      letter-spacing: 0.2px;
+      border: 1.5px solid #8c9c7c;
+      box-sizing: border-box;
+    }
+    .title-credits {
+      text-align: left;
+      margin: 0 0 18px 0;
+      padding: 0 0 12px 0;
+      background: none !important;
+      border: none !important;
+      color: #d2e0c2 !important;
+      font-family: Tahoma, Geneva, Verdana, sans-serif !important;
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-shadow: none;
+    }
+    .tabs {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+      width: 120px;
+    }
+    .tab-btn {
+      background: #4e5a41 !important;
+      color: #d2e0c2 !important;
+      border: 1.5px solid #8c9c7c !important;
+      border-radius: 0 !important;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 7px 0 7px 12px;
+      margin: 0;
+      font-family: Tahoma, Geneva, Verdana, sans-serif !important;
+      text-shadow: none;
+      box-shadow: none;
+      outline: none;
+      text-align: left;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .tab-btn.active, .tab-btn:focus, .tab-btn:hover {
+      background: #6e7a61 !important;
+      color: #fff !important;
+      border: 1.5px solid #d2e0c2 !important;
+    }
+    #toggleButton, #skipButton, .export-button, #resetButton, #debugButton, #btnSteam2003, #btnThemeDefault {
+      background: #4e5a41 !important;
+      color: #d2e0c2 !important;
+      border: 1.5px solid #8c9c7c !important;
+      font-family: Tahoma, Geneva, Verdana, sans-serif !important;
+      text-shadow: none;
+      border-radius: 0 !important;
+      padding: 7px 18px;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: none;
+      outline: none;
+      margin: 2px 0;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    #toggleButton:focus, #skipButton:focus, .export-button:focus, #resetButton:focus, #debugButton:focus, #btnSteam2003:focus, #btnThemeDefault:focus {
+      border: 1.5px solid #d2e0c2 !important;
+    }
+    #toggleButton:hover, #skipButton:hover, .export-button:hover, #resetButton:hover, #debugButton:hover, #btnSteam2003:hover, #btnThemeDefault:hover {
+      background: #6e7a61 !important;
+      color: #fff !important;
+      border: 1.5px solid #d2e0c2 !important;
+    }
+    input, select, textarea {
+      background: #495940 !important;
+      color: #d2e0c2 !important;
+      border: 1.5px solid #8c9c7c !important;
+      font-family: Tahoma, Geneva, Verdana, sans-serif !important;
+      font-size: 13px;
+      border-radius: 0 !important;
+      padding: 4px 8px;
+      outline: none;
+      box-shadow: none;
+      margin: 2px 0;
+    }
+    input[type="checkbox"] {
+      accent-color: #e1c96a;
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+    label {
+      color: #e1c96a !important;
+      font-size: 13px;
+      font-family: Tahoma, Geneva, Verdana, sans-serif !important;
+      font-weight: normal;
+      margin-bottom: 2px;
+    }
+    .profile-list th, .profile-list td {
+      color: #d2e0c2 !important;
+      border-color: #8c9c7c !important;
+      font-family: Tahoma, Geneva, Verdana, sans-serif !important;
+      font-size: 13px;
+      padding: 6px 4px;
+      background: #495940 !important;
+    }
+    .profile-list th {
+      background: #4e5a41 !important;
+      border-bottom: 2px solid #8c9c7c !important;
+    }
+    .profile-list tr:hover {
+      background: #6e7a61 !important;
+    }
+    .console-container, .console-tech-container, .profile-list-container {
+      background: #495940 !important;
+      border: 1.5px solid #8c9c7c !important;
+      color: #d2e0c2 !important;
+      font-family: Tahoma, Geneva, Verdana, sans-serif !important;
+      border-radius: 0 !important;
+      box-shadow: none;
+    }
+    .count-display {
+      background: #495940 !important;
+      border: 1.5px solid #8c9c7c !important;
+      color: #d2e0c2 !important;
+      font-family: Tahoma, Geneva, Verdana, sans-serif !important;
+      border-radius: 0 !important;
+      font-size: 15px;
+      margin: 8px 0;
+    }
+    a {
+      color: #d2e0c2 !important;
+      text-decoration: underline !important;
+      font-family: Tahoma, Geneva, Verdana, sans-serif !important;
+    }
+    ::selection {
+      background: #8c9c7c;
+      color: #3c4a36;
+    }
+    hr, .separator {
+      border: none;
+      border-top: 1.5px solid #8c9c7c;
+      margin: 12px 0;
+    }
+    /* Scroll retro */
+    ::-webkit-scrollbar {
+      width: 8px;
+      background: #495940;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #8c9c7c;
+      border-radius: 0;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d2e0c2;
+    }
+    .profile-list-container, .console-container, .console-tech-container {
+      overflow-y: auto;
+      max-height: 220px;
+      position: relative;
+      scrollbar-width: thin;
+      scrollbar-color: #8c9c7c #495940;
+    }
+    .profile-list-container::-webkit-scrollbar,
+    .console-container::-webkit-scrollbar,
+    .console-tech-container::-webkit-scrollbar {
+      width: 8px;
+      background: transparent;
+      transition: background 0.2s;
+    }
+    .profile-list-container:hover::-webkit-scrollbar,
+    .console-container:hover::-webkit-scrollbar,
+    .console-tech-container:hover::-webkit-scrollbar {
+      background: #495940;
+    }
+    .profile-list-container::-webkit-scrollbar-thumb,
+    .console-container::-webkit-scrollbar-thumb,
+    .console-tech-container::-webkit-scrollbar-thumb {
+      background: transparent;
+      transition: background 0.2s;
+    }
+    .profile-list-container:hover::-webkit-scrollbar-thumb,
+    .console-container:hover::-webkit-scrollbar-thumb,
+    .console-tech-container:hover::-webkit-scrollbar-thumb {
+      background: #8c9c7c;
+    }
+    .profile-list-container::-webkit-scrollbar-thumb:hover,
+    .console-container::-webkit-scrollbar-thumb:hover,
+    .console-tech-container::-webkit-scrollbar-thumb:hover {
+      background: #d2e0c2;
+    }
+  </style>
+</head>
+<body>
+  <div class="title-credits">
+    <div style="color: #0f0; font-size: 22px; font-weight: bold; text-shadow: 0 0 15px #0f0; letter-spacing: 3px;">STEAM INVENTORY SCANNER</div>
+    <div style="margin-top: 8px;">
+      <span style="color: #0f0; font-size: 16px; text-shadow: 0 0 7px #0f0; font-weight: 600;">by syokos</span>
+      <span style="color: #ff7; font-size: 14px; margin-left: 10px; text-shadow: 0 0 5px #ff7; font-style: italic;">ft ALEX</span>
+    </div>
+  </div>
+  
+  <div class="tabs">
+    <button class="tab-btn active" id="tabScan">Scan</button>
+    <button class="tab-btn" id="tabHistory">Historique</button>
+  </div>
+  <div id="scanSection">
+    <div class="control-group">
+      <label for="delay">⏱️ DÉLAI DE LATENCE ENTRE LES SCANS:</label>
+      <input type="range" id="delay" min="1500" max="12500" value="5000" step="250">
+      <div style="text-align: center;">
+        <div class="delay-value" id="delayValue">5000 ms</div>
+      </div>
+    </div>
+    
+    <div class="button-group">
+      <button id="toggleButton">DÉMARRER LE SCAN</button>
+      <button id="skipButton" style="display: none;">SKIP</button>
+    </div>
+    <div id="skipHelp" style="display:none; text-align:center; color:#aaa; font-size:12px; margin-bottom:10px;">Clique sur SKIP pour passer immédiatement au profil suivant.</div>
+    
+    <div class="progress-container">
+      <div id="progressBar"></div>
+      <div id="progressText">EN ATTENTE...</div>
+    </div>
+    
+    <div class="count-display" id="allCount" style="margin-bottom: 5px;">0 PROFILS ANALYSÉS</div>
+    <div class="count-display" id="totalCases">0 CAISSES CS2 DÉTECTÉES</div>
+    <div class="count-display" id="loopStatus" style="display: none; background: linear-gradient(135deg, #001100 0%, #002200 100%); border-color: #0f0;">
+      <span style="color: #0f0;">🔄 Mode boucle - Cycle #<span id="cycleCount">0</span></span>
+    </div>
+    
+    <div style="text-align: center; margin: 10px 0;">
+      <label style="color: #0f0; font-size: 12px;">
+        <input type="checkbox" id="showAllProfiles" style="margin-right: 5px;">
+        Afficher tous les profils (même sans caisses)
+      </label>
+    </div>
+    
+    <div style="text-align: center; margin: 10px 0;">
+      <label style="color: #ff7; font-size: 12px; font-weight: bold;">
+        <input type="checkbox" id="loopMode" style="margin-right: 5px;">
+        🔄 Mode boucle infinie (scan aléatoire continu)
+      </label>
+    </div>
+    
+    <div style="text-align: center; margin: 10px 0;">
+      <!-- Case à cocher Exécuter en arrière-plan supprimée -->
+    </div>
+    
+    <div class="profile-list-container">
+      <table class="profile-list" id="profileTable">
+        <thead>
+          <tr>
+            <th>PROFIL</th>
+            <th>CAISSES</th>
+            <th>HEURES CS2</th>
+            <th>VALEUR TOTALE</th>
+          </tr>
+        </thead>
+        <tbody id="profileTableBody">
+          <!-- Les profils seront ajoutés ici dynamiquement -->
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="console-container">
+      <div id="consoleOutput"></div>
+    </div>
+    <div class="console-tech-container">
+      <div id="consoleTechOutput"></div>
+    </div>
+    
+    <div class="section">
+      <button class="export-button" id="exportButton" style="width: 31%;">EXPORTER CSV</button>
+      <button id="resetButton" style="width: 31%;">RÉINITIALISER</button>
+      <button class="export-button" id="debugButton" style="width: 31%;">DEBUG DATA</button>
+    </div>
+  </div>
+  <div id="historySection" style="display:none;">
+    <input type="text" id="searchHistoryInput" placeholder="Rechercher un pseudo, SteamID ou URL..." style="width:60%;margin:10px auto;display:block;padding:8px;">
+    <div style="text-align:center;margin:6px 0;">
+      <button id="importCsvBtn" style="background:#222;color:#fff;border:1px solid #444;border-radius:4px;padding:2px 10px;font-size:11px;margin-bottom:4px;width:auto;height:24px;min-width:0;">Importer CSV</button>
+      <a href="https://merge-csv.com/" id="mergeCsvLink" target="_blank" style="display:inline-block;background:#222;color:#4fc3f7;border:1px solid #444;border-radius:4px;padding:2px 10px;font-size:13px;margin-left:6px;margin-bottom:4px;width:auto;height:24px;min-width:0;line-height:19px;text-decoration:none;vertical-align:middle;">🔗 Fusionner CSV</a>
+      <input type="file" id="importCsvInput" accept=".csv,text/csv" style="display:none;">
+    </div>
+    <div class="profile-list-container">
+      <table class="profile-list" id="historyTable">
+        <thead>
+          <tr>
+            <th>PROFIL</th>
+            <th id="sortHistoryPseudo">PSEUDO</th>
+            <th id="sortHistoryCaisses">CAISSES</th>
+            <th id="sortHistoryHeures">HEURES CS2</th>
+            <th id="sortHistoryValeur">VALEUR TOTALE</th>
+          </tr>
+        </thead>
+        <tbody id="historyTableBody">
+          <!-- Historique -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
